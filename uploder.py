@@ -48,6 +48,25 @@ pending_downloads = {}
 
 URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 
+# Start Command Handler
+@bot.on_message(filters.command("start") & filters.private)
+async def start_command(client, message: Message):
+    await message.reply_text(
+        "Hello! 👋\n\nI'm here to help you upload files. Send me a direct link to a file, and I’ll assist with downloading, renaming, or uploading it for you.\n\nType /help to see more options."
+    )
+
+# Help Command Handler
+@bot.on_message(filters.command("help") & filters.private)
+async def help_command(client, message: Message):
+    await message.reply_text(
+        "**Help Menu**\n\n"
+        "• **Send a URL**: Send a file link, and I'll fetch and upload it.\n"
+        "• **Rename**: When prompted, choose the rename option to provide a custom name.\n\n"
+        "Commands:\n"
+        "/start - Start the bot\n"
+        "/help - Show this help message\n"
+    )
+
 @bot.on_message(filters.text & filters.private)
 async def handle_message(client, message: Message):
     chat_id = message.chat.id
