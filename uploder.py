@@ -5,6 +5,8 @@ import time
 import logging
 import asyncio
 import aiohttp
+from flask import Flask
+from threading import Thread
 from pyleaves import Leaves
 from pyrogram.enums import ParseMode
 from pyrogram import Client, filters
@@ -170,6 +172,22 @@ async def on_file_decision(client, callback_query):
         await editable_text.delete()
         await callback_query.message.edit_text(f"{str(e)}")
 
+# Flask app for the keep-alive feature
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "I'm alive"
+
+def run():
+    app.run(host="0.0.0.0", port=8080)
+
+def keep_alive():
+    server = Thread(target=run)
+    server.start()
+
+# Start the bot and the keep-alive server
 if __name__ == "__main__":
+    keep_alive()  # Start the keep-alive Flask server
     user.start()
     bot.run()
