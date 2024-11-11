@@ -2,27 +2,22 @@ import re
 import os
 import logging
 import aiohttp
-import time
 
 PROGRESS_BAR_TEMPLATE = """
-{action}: {percentage:.2f}%
-[{progress_bar}]
-{current_size} of {total_size}
-Speed: {speed}/s
-ETA: {eta}s
-
-Thanks for using!
+Percentage: {percentage} | {current}
+Total Completed: {total}%
+Current Speed: {speed}/s
+Estimated Time: {est_time}
 """
 
 def progressArgs(action: str, progress_message, start_time):
     return (
-        action,  # Pass "Downloading" or "Uploading" as needed
+        action,
         progress_message,
         start_time,
         PROGRESS_BAR_TEMPLATE,
-        '▪',  # Completed part of the bar
-        '▫',  # Incomplete part of the bar
-        10    # Bar length
+        '▓',
+        '░'
     )
 
 async def async_download_file(url, filename, progress=None, progress_args=()):
@@ -69,11 +64,13 @@ async def get_filename(url):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.head(url, allow_redirects=True) as response:
-                content_disposition = response.headers.get('content-disposition')
+                content_disposition = response.headers.get('Content-Disposition')
                 if content_disposition:
-                    filenames = re.findall("filename=(.+)", content_disposition)
-                    if filenames:
-                        return filenames[0]
-    except:
-        pass
-    return os.path.basename(url.split("?")[0])
+                    filename_match = re.findall('filename="(.+)"', content_disposition)
+                    if filename_match:
+                        return filename_match[0]
+
+                return url.split('/')[-1].split('?')[0]
+    except Exception as e:
+        logging.error(f"Error fetching filename from headers: {str(e)}")
+        return url.split('/')[-1].split('?')[0]
