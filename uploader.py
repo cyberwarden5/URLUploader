@@ -91,7 +91,7 @@ async def handle_message(client, message: Message):
                 url,
                 new_name_with_ext,
                 progress=Leaves.progress_for_pyrogram,
-                progress_args=progressArgs("Downloading", editable_text, start_time)
+                progress_args=progressArgs("📥 Downloading Progress", editable_text, start_time)
             )
             
             upload_start_time = time.time()
@@ -99,7 +99,7 @@ async def handle_message(client, message: Message):
                 document=downloaded_file, 
                 file_name=new_name_with_ext,
                 progress=Leaves.progress_for_pyrogram,
-                progress_args=progressArgs("Uploading", editable_text, upload_start_time)
+                progress_args=progressArgs("📤 Uploading Progress", editable_text, upload_start_time)
             )
 
             await editable_text.delete()
@@ -168,7 +168,7 @@ async def on_file_decision(client, callback_query):
                 url,
                 filename,
                 progress=Leaves.progress_for_pyrogram,
-                progress_args=progressArgs("Downloading", editable_text, start_time)
+                progress_args=progressArgs("📥 Downloading Progress", editable_text, start_time)
             )
             
             upload_start_time = time.time()
@@ -176,7 +176,7 @@ async def on_file_decision(client, callback_query):
                 document=downloaded_file, 
                 file_name=filename,
                 progress=Leaves.progress_for_pyrogram,
-                progress_args=progressArgs("Uploading", editable_text, upload_start_time)
+                progress_args=progressArgs("📤 Uploading Progress", editable_text, upload_start_time)
             )
 
             await editable_text.delete()
