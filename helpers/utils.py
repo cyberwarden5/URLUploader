@@ -7,7 +7,7 @@ import time
 # Updated progress bar template
 PROGRESS_BAR_TEMPLATE = """
 **{action}**  
-[{bar}] **{percentage}%**  
+[{bar}] **{percentage:.2f}%**  
 📦 **Done:** {current} / {total}  
 ⚡️ **Speed:** {speed}/s  
 ⏳ **ETA:** {est_time}
@@ -48,7 +48,7 @@ async def async_download_file(url, filename, progress=None, progress_args=()):
                         await progress(
                             downloaded_size,
                             total_size,
-                            *(progress_args + (start_time,))
+                            *progress_args  # Ensure all progress_args are passed here
                         )
 
     return file_path
@@ -99,7 +99,7 @@ async def progress_for_pyrogram(current, total, action, progress_message, start_
     progress_text = template.format(
         action=action,
         bar=bar,
-        percentage=round(percentage, 2),
+        percentage=percentage,
         current=file_size_format(current),
         total=file_size_format(total),
         speed=file_size_format(speed),
@@ -108,5 +108,6 @@ async def progress_for_pyrogram(current, total, action, progress_message, start_
 
     try:
         await progress_message.edit_text(progress_text)
-    except:
-        pass
+    except Exception as e:
+        pass  # Ignore edit issues to keep bot running smoothly
+
