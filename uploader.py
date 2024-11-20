@@ -100,22 +100,26 @@ async def handle_text(client, message: Message):
         await handle_rename(client, message)
 
 @bot.on_message(filters.video | filters.document & filters.private)
-async def handle_file(client, message: Message):
-    chat_id = message.chat.id
-    file = message.video or message.document
-    file_name = file.file_name
-    file_size = file_size_format(file.file_size)
-    file_id = file.file_id
+async def handle_file(client, message):
+    try:
+        buttons = [
+            [
+                InlineKeyboardButton("Rename", callback_data="rename"),
+                InlineKeyboardButton("Delete", callback_data="delete"),
+            ],
+            [
+                InlineKeyboardButton("Convert", callback_data="convert"),
+            ]
+        ]
 
-    buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Rename", callback_data=f"rename_file|{file_id}"),
-         InlineKeyboardButton("Convert to Document" if file.mime_type.startswith("video/") else "Convert to Video", callback_data=f"convert_file|{file_id}")]
-    ])
+        reply_markup = InlineKeyboardMarkup(buttons)
 
-    await message.reply_text(
-        f"**What do you want to do with this file?**\n\n**Name**: `{file_name}`\n**Size**: `{file_size}`",
-        reply_markup=buttons
-    )
+        await message.reply_text(
+            "File uploaded successfully! Choose an action:",
+            reply_markup=reply_markup
+        )
+    except Exception as e:
+        logging.error(f"Error creating buttons: {e}")
 
 @bot.on_callback_query(filters.regex(r"^(default|rename_url|rename_file|convert_file)\|"))
 async def on_option(client, callback_query):
